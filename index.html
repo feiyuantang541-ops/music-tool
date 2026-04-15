@@ -3,35 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在线乐谱图片/PDF翻译工具</title>
+    <title>在线乐谱图片/PDF翻译工具（修复版）</title>
     <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { background: #f0f2f5; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
         h1 { text-align: center; color: #333; margin-bottom: 30px; }
-        .upload-area { border: 2px dashed #007bff; padding: 40px; text-align: center; margin-bottom: 20px; border-radius: 10px; cursor: pointer; }
-        .upload-area:hover { background: #f8f9fa; }
+        .upload-area { border: 2px dashed #007bff; padding: 40px; text-align: center; margin-bottom: 20px; border-radius: 10px; cursor: pointer; background: #f8f9fa; }
+        .upload-area:hover { background: #e9ecef; }
         input[type="file"] { display: none; }
-        .btn { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        .btn { padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 16px; }
         .btn:hover { background: #0056b3; }
         .result-area { margin-top: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 10px; min-height: 200px; background: #fdfdfd; }
         .progress { width: 100%; height: 20px; background: #e9ecef; border-radius: 5px; margin: 10px 0; display: none; }
         .progress-bar { width: 0%; height: 100%; background: #28a745; border-radius: 5px; transition: width 0.3s; }
         .log { margin-top: 10px; padding: 10px; background: #e9ecef; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; }
+        .tip { color: #666; font-size: 14px; margin-top: 10px; text-align: center; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🎵 在线乐谱图片/PDF一键翻译工具</h1>
+    <h1>🎵 在线乐谱图片/PDF一键翻译工具（修复版）</h1>
+    <p class="tip">⚠️ 本工具仅支持「文本格式的五线谱/简谱」，复杂扫描件请用专业AI工具（见底部说明）</p>
     
     <div class="upload-area" onclick="document.getElementById('fileInput').click()">
         <input type="file" id="fileInput" accept="image/*,.pdf" onchange="handleFile(event)">
         <h3>点击上传 五线谱/简谱 图片 或 PDF</h3>
-        <p style="color:#666; margin-top:10px;">支持 PNG, JPG, PDF 文件</p>
+        <p style="color:#666; margin-top:10px;">支持 PNG, JPG, PDF 文件（推荐文本格式，扫描件识别率低）</p>
     </div>
 
     <div style="text-align:center;">
@@ -45,10 +47,10 @@
 
     <div class="result-area">
         <h3>📊 翻译结果 (简谱文本)</h3>
-        <div id="resultText" style="margin-top:10px; font-size:16px; line-height:1.8;"></div>
+        <div id="resultText" style="margin-top:10px; font-size:18px; line-height:2; letter-spacing: 3px;"></div>
         
         <h3 style="margin-top:20px;">🎼 可视化预览 (可直接导出)</h3>
-        <div id="previewArea" style="margin-top:10px; padding:20px; background:white; border:1px solid #ddd; display:none;"></div>
+        <div id="previewArea" style="margin-top:10px; padding:20px; background:white; border:1px solid #ddd; display:none; font-size:20px; line-height:2; letter-spacing: 5px;"></div>
     </div>
 
     <div style="text-align:center; margin-top:20px;">
@@ -57,6 +59,13 @@
     </div>
 
     <div class="log" id="logArea"></div>
+
+    <div style="margin-top:30px; padding:15px; background:#fff3cd; border-radius:8px;">
+        <h4>📌 专业级乐谱翻译方案（无乱码）</h4>
+        <p>1. 用 <a href="https://www.playscore.co/" target="_blank">PlayScore 2</a> 上传五线谱图片/PDF，AI精准识别</p>
+        <p>2. 用免费开源软件 <a href="https://musescore.org/zh-hans" target="_blank">MuseScore 4</a> 一键转简谱，导出高清PDF/图片</p>
+        <p>3. 完全免费，效果碾压前端工具，适合所有复杂乐谱</p>
+    </div>
 </div>
 
 <script>
@@ -65,14 +74,14 @@
 
     // 日志输出
     function log(msg){
-        document.getElementById('logArea').innerHTML += msg + "<br>";
+        document.getElementById('logArea').innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}<br>`;
         document.getElementById('logArea').scrollTop = 99999;
     }
 
     // 选择文件
     function handleFile(e){
         currentFile = e.target.files[0];
-        log("✅ 已选择文件：" + currentFile.name);
+        log(`✅ 已选择文件：${currentFile.name}`);
         document.getElementById('resultText').innerText = "文件已加载，请点击开始翻译。";
     }
 
@@ -82,7 +91,7 @@
         document.querySelector('.progress').style.display = "block";
     }
 
-    // 🎯 核心翻译逻辑
+    // 🎯 核心翻译逻辑（修复版：过滤乱码，优化映射）
     async function translateMusic(){
         if(!currentFile){
             alert("请先上传文件！");
@@ -103,8 +112,9 @@
             setProgress(60);
             log("🧠 使用OCR识别乐谱文字...");
 
-            // 2. 简单规则转简谱 (实际增强版可接入云端OCR)
-            let jianpu = convertToJianpu(recognizedText);
+            // 2. 过滤乱码 + 转简谱
+            let cleanText = filterGarbled(recognizedText);
+            let jianpu = convertToJianpu(cleanText);
             
             setProgress(90);
             document.getElementById('resultText').innerText = jianpu;
@@ -115,11 +125,20 @@
             setTimeout(()=> document.querySelector('.progress').style.display = "none", 1000);
 
         } catch (err) {
-            log("❌ 错误：" + err.message);
+            log(`❌ 错误：${err.message}`);
+            alert(`翻译失败：${err.message}`);
         }
     }
 
-    // 图片识别
+    // 过滤乱码（核心修复：只保留有效字符）
+    function filterGarbled(text){
+        log("🧹 正在过滤乱码...");
+        // 只保留音名、数字、空格、换行
+        const validChars = /[CDEFGABcdefgab0-9\s\n\r]/g;
+        return text.match(validChars)?.join('') || "";
+    }
+
+    // 图片识别（优化版：用中英文混合模型）
     async function processImage(file){
         return new Promise((resolve, reject)=>{
             const reader = new FileReader();
@@ -127,10 +146,10 @@
                 const img = new Image();
                 img.src = e.target.result;
                 img.onload = async ()=>{
-                    // 使用Tesseract识别文字
+                    // 用中英文混合模型，提升识别率
                     const { data: { text } } = await Tesseract.recognize(
                         img.src,
-                        'eng', // 主要识别英文/音名
+                        'eng+chi_sim',
                         { logger: m => setProgress(10 + m.progress * 40) }
                     );
                     recognizedText = text;
@@ -163,45 +182,37 @@
         });
     }
 
-    // 🎼 简单规则转换 (可替换为专业AI接口)
+    // 🎼 优化版简谱转换（过滤无效字符，规范格式）
     function convertToJianpu(text){
         log("🔄 正在转换乐谱规则...");
         let jp = "";
-        // 基础音名映射
+        // 基础音名映射（严格匹配）
         const map = {
             "C": "1", "D": "2", "E": "3", "F": "4", "G": "5", "A": "6", "B": "7",
             "c": "1", "d": "2", "e": "3", "f": "4", "g": "5", "a": "6", "b": "7",
             "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7"
         };
 
-        // 按空格/行拆分
-        const lines = text.split(/\r?\n/);
+        // 按行拆分，逐行转换
+        const lines = text.split(/\r?\n/).filter(line => line.trim());
         lines.forEach(line=>{
-            const chars = line.trim().split(/\s+/);
+            const chars = line.trim().split(/\s+/).filter(c => c.trim());
             let lineJp = "";
             chars.forEach(c=>{
-                // 匹配音名 C4 D4 等
-                if(c.length >= 2 && map[c[0]]){
-                    // 简单八度处理
-                    let octave = c.match(/\d+/);
-                    if(octave){
-                        let num = parseInt(octave[0]);
-                        if(num === 4) lineJp += map[c[0]] + " ";
-                        else if(num > 4) lineJp += "+" + map[c[0]] + " ";
-                        else lineJp += "-" + map[c[0]] + " ";
-                    } else {
-                        lineJp += map[c[0]] + " ";
-                    }
+                // 匹配标准音名格式（如C4、D4）
+                if(c.length >= 2 && map[c[0]] && !isNaN(c[1])){
+                    let octave = parseInt(c[1]);
+                    if(octave === 4) lineJp += map[c[0]] + " ";
+                    else if(octave > 4) lineJp += "+" + map[c[0]] + " ";
+                    else lineJp += "-" + map[c[0]] + " ";
                 } else if(map[c]){
                     lineJp += map[c] + " ";
-                } else {
-                    lineJp += c + " ";
                 }
             });
-            jp += lineJp + "\n";
+            if(lineJp.trim()) jp += lineJp + "\n";
         });
 
-        return jp || "未识别到有效内容";
+        return jp || "⚠️ 未识别到有效乐谱内容，请上传文本格式的五线谱/简谱";
     }
 
     // 清空
@@ -211,14 +222,14 @@
         log("🧹 结果已清空");
     }
 
-    // 导出图片
+    // 导出图片（优化版：高清渲染）
     function exportImage(){
         const preview = document.getElementById('previewArea');
-        if(!preview.innerText){
-            alert("请先翻译！");
+        if(!preview.innerText || preview.innerText.includes("⚠️")){
+            alert("请先完成有效翻译！");
             return;
         }
-        html2canvas(preview).then(canvas=>{
+        html2canvas(preview, {scale: 2}).then(canvas=>{
             const link = document.createElement('a');
             link.download = 'jianpu-result.png';
             link.href = canvas.toDataURL('image/png');
@@ -227,17 +238,27 @@
         });
     }
 
-    // 导出PDF
+    // 导出PDF（优化版：规范排版）
     function exportPDF(){
         const text = document.getElementById('resultText').innerText;
-        if(!text){
-            alert("请先翻译！");
+        if(!text || text.includes("⚠️")){
+            alert("请先完成有效翻译！");
             return;
         }
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setFontSize(12);
-        doc.text(text, 10, 10);
+        doc.setFont("msyh", "normal");
+        doc.setFontSize(16);
+        const lines = text.split("\n").filter(line => line.trim());
+        let y = 20;
+        lines.forEach(line=>{
+            doc.text(line, 10, y);
+            y += 15;
+            if(y > 280){
+                doc.addPage();
+                y = 20;
+            }
+        });
         doc.save('jianpu-result.pdf');
         log("📄 已导出简谱PDF");
     }
